@@ -59,7 +59,7 @@ const i18n = new VueI18n({
   messages, // set locale messages
 });
 
-export const k = new Vue();
+export const eventSearch = new Vue();
 
 /* eslint-disable no-new */
 export const app = new Vue({
