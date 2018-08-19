@@ -9,7 +9,6 @@
   export default {
     data(){
       return{
-        name: 'Collection',
         dataTrack: {
           method: 'user.gettopalbums',
           limit: '40'

@@ -1,16 +1,21 @@
 <template>
   <div class="upload">
-    <span>Upload</span>
+    <Tracks v-bind:dataTrack="dataTrack"></Tracks>
   </div>
 </template>
 
 <script>
+  import Tracks from './Tracks.vue';
   export default {
     data(){
       return{
-        name: 'Upload'
+        dataTrack: {
+          method: 'library.getartists',
+          limit: '40'
+        }
       }
-    }
+    },
+    components: {Tracks}
   }
 </script>
 

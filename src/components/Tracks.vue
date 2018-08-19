@@ -8,7 +8,7 @@
         <div _ngcontent-c11="" class="tracks__item-bottom-content">
 
           <div _ngcontent-c11="" class="tracks__item-bottom-content-title">
-            <div _ngcontent-c11="">{{track.artist.name}}</div>
+            <div _ngcontent-c11=""  v-if="track.artist" >{{track.artist.name}}</div>
             <div _ngcontent-c11="">{{track.name}}</div>
           </div>
           <span _ngcontent-c11="" class="tracks__item-bottom-content-favorite"></span>
@@ -39,6 +39,10 @@
               this.tracks = tracks.tracks.track;
             } else if (tracks.topalbums){
               this.tracks = tracks['topalbums']['album'];
+              console.log(this.tracks);
+            } else if (tracks.artists) {
+              this.tracks = tracks['artists']['artist'];
+              console.log(this.tracks);
             }
           })
       } else {

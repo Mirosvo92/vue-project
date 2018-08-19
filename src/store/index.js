@@ -9,11 +9,14 @@ export default new Vuex.Store({
     user: false,
     userName: '',
     lang: 'en',
+    userImage: '',
   },
   mutations: {
     setDataUser(state, payload) {
+      console.log('payload', payload);
       state.user = true;
       state.userName = payload.displayName;
+      state.userImage = payload.photoURL;
     },
     ['SET_LANG'] (state, payload) {
       app.$i18n.locale = payload;

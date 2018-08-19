@@ -1,23 +1,20 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import VueRouter from 'vue-router'
 import firebase from 'firebase';
-import store from './store/index.js'
-import ShowDirective from './directives/show'
-import ViewResourse from 'vue-resource'
+import store from './store/index.js';
+import ViewResourse from 'vue-resource';
 import VueI18n from 'vue-i18n';
+import Vuelidate from 'vuelidate';
+import VueFirestore from 'vue-firestore'
 
 Vue.config.productionTip = false;
 Vue.use(VueRouter);
 Vue.use(ViewResourse);
-Vue.directive('showElement', ShowDirective);
 Vue.use(VueI18n);
-
-
-// Create a Vue instance with `i18n` option
+Vue.use(Vuelidate);
+Vue.use(VueFirestore);
 
 
 // Initialize Firebase
@@ -30,6 +27,8 @@ let config = {
   messagingSenderId: "198182316585"
 };
 firebase.initializeApp(config);
+
+export const firestore = firebase.firestore();
 
 const messages = {
   en: {
@@ -60,6 +59,7 @@ const i18n = new VueI18n({
 });
 
 export const eventSearch = new Vue();
+export const eventChangedProfile = new Vue();
 
 /* eslint-disable no-new */
 export const app = new Vue({
@@ -72,9 +72,10 @@ export const app = new Vue({
   created() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        // this.$store.state.user = firebase.auth().currentUser;
+        this.$store.state.userProfile = user;
         this.$store.state.user = true;
         this.$store.state.userName = user.displayName;
+        this.$store.state.userImage = user.photoURL;
       } else {
         this.$store.state.user = null
       }

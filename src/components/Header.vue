@@ -24,7 +24,8 @@
     <div class="user-link" :class="{'user-link--none': isUser}">
       <ul class="user-link__list">
         <li class="user-link__list-item"><router-link class="main-nav__list-item-link" active-class="main-nav__list-item-link--active" to="/auth">{{ $t("message.signIn") }} </router-link></li>
-        <li class="user-link__list-item"><a class="main-nav__list-item-link" href="">{{ $t("message.createAccount") }}</a></li>
+        <li class="user-link__list-item"><router-link class="main-nav__list-item-link" active-class="main-nav__list-item-link--active" to="/create-account">{{ $t("message.createAccount") }}</router-link></li>
+
       </ul>
       <span class="user-link__close"><i class="fas fa-times main-color fa-2x"></i></span>
     </div>
@@ -32,11 +33,12 @@
     <!-- user active -->
     <div class="header-user" @click="openSetting" :class="{'header-user--active': isUser}">
       <div class="header-user__wrapper">
-        <span class="round"></span><span class="header-user__name">{{userName}}</span>
+        <img class="round" v-if="userImage" :src="userImage">
+        <div v-else class="round"></div>
+        <span class="header-user__name">{{userName}}</span>
         <!-- user setting -->
         <ul class="user-setting" :class="{'user-setting--active': isOpenSettings}">
-          <li class="user-setting__item"><a class="user-setting__item-link" href="" >Profile Settings</a></li>
-          <li class="user-setting__item"><a class="user-setting__item-link" href="" >Help</a></li>
+          <li class="user-setting__item"><router-link class="user-setting__item-link" active-class="main-nav__list-item-link--active" to="/private-room">Profile Settings</router-link></li>
           <li class="user-setting__item"><button class="user-setting__item-link" @click="signOut" >Sign Out</button></li>
         </ul>
       </div>
@@ -50,7 +52,6 @@
         <li class="language__item" @click="setLang('en')">En</li>
         <li class="language__item" @click="setLang('ru')" >RU</li>
       </ul>
-      <!--<li class="user-link__list-item user-link__list-item&#45;&#45;arrow"><span class="user-link__list-item-link">En</span></li>-->
     </div>
   </header>
 </template>
@@ -59,6 +60,7 @@
 
   import firebase from 'firebase';
   import {eventSearch} from '../main.js'
+  import {eventChangedProfile} from '../main.js'
   export default {
     data(){
       return{
@@ -75,6 +77,9 @@
       userName() {
         return this.$store.state.userName;
       },
+      userImage() {
+        return this.$store.state.userImage;
+      },
       currantLanguage() {
         return this.$store.state.lang;
       },
@@ -89,11 +94,9 @@
           .then(tracks =>{
               if (tracks['results'] && tracks['results']['trackmatches'] && tracks['results']['trackmatches']['track']) {
                 this.$router.push('/search');
-                console.log('data[\'results\']', tracks['results']['trackmatches']['track']);
                 eventSearch.$emit('search', tracks['results']['trackmatches']['track']);
               } else {
                 this.$router.push('/');
-                localStorage.setItem('search', null)
               }
           })
 
@@ -117,6 +120,9 @@
       if (this.$router.currentRoute.path == '/search'){
         this.$router.push('/');
       }
+      eventChangedProfile.$on('updateProfile', data =>{
+        this.$store.state.userName = data.userName;
+      })
     }
   }
 </script>

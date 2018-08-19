@@ -12,12 +12,27 @@
 <path style=" fill:#1976D2;" d="M 43.609375 20.082031 L 42 20.082031 L 42 20 L 24 20 L 24 28 L 35.304688 28 C 34.511719 30.238281 33.070313 32.164063 31.214844 33.570313 C 31.21875 33.570313 31.21875 33.570313 31.21875 33.570313 L 37.410156 38.808594 C 36.972656 39.203125 44 34 44 24 C 44 22.660156 43.863281 21.351563 43.609375 20.082031 Z "/>
 </g>
 </svg></span>Continue with Google</button>
-        <!-- or -->
-        <span class="form-registration__text">or</span>
-        <!-- input -->
-        <input class="form-registration__input" type="text" placeholder="Your email address or profile URL*">
-        <!-- submit -->
-        <button class="form-registration__button form-registration__button--continue">Continue</button>
+        <form class="main-form" @submit.prevent="onSubmit"  autocomplete="off">
+          <!-- input -->
+          <input class="form-registration__input"
+                 type="text"
+                 :class="{'error-input': $v.email.$error}"
+                 @blur="$v.email.$touch()"
+                 v-model="email"
+                 placeholder="Your email*"
+          />
+          <!-- input password -->
+          <input class="form-registration__input"
+                 type="password"
+                 :class="{'error-input': $v.password.$error}"
+                 @blur="$v.password.$touch()"
+                 v-model="password"
+                 placeholder="Your password (at least 6 characters)*"/>
+          <!-- submit -->
+          <button :disabled="$v.$invalid" class="form-registration__button form-registration__button--continue"
+
+          >Continue</button>
+        </form>
         <!-- agreement -->
         <a class="form-registration__help-link" href="">Need help?</a>
         <!-- agreement -->
@@ -32,15 +47,26 @@
 </template>
 
 <script>
-  import firebase from 'firebase';
   let provider = new firebase.auth.FacebookAuthProvider();
-  // flag for popup window
+  import { required, email, minLength } from 'vuelidate/lib/validators';
+  import firebase from 'firebase';
 
   export default {
     data(){
       return{
-        name: 'Auth',
-        isActive: true
+        isActive: true,
+        email: '',
+        password: ''
+      }
+    },
+    validations:{
+      email: {
+        required,
+        email
+      },
+      password: {
+        required,
+        minLength: minLength(6)
       }
     },
     methods:{
@@ -72,6 +98,19 @@
       closePage(){
         this.isActive = !this.isActive;
         this.$router.push('/');
+      },
+      onSubmit(){
+        let self = this;
+        firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(function(result) {
+          console.log('result', result);
+          let user = result.user;
+          if (user) {
+            self.$router.push('/');
+            self.$store.commit('setDataUser', user);
+          }
+        }).catch(function(error) {
+          console.log(error);
+        });
       }
     }
   }
@@ -120,6 +159,35 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,.65);
+  }
+
+  .main-form{
+    margin-top: 15px;
+    max-width: 400px;
+    width: 100%;
+  }
+
+  .form-registration__input{
+    margin-bottom: 15px;
+  }
+
+  .form-block{
+    margin-bottom: 21px;
+    width: 100%;
+    &__name{
+      margin-bottom: 10px;
+      display: block;
+      font-size: 18px;
+      color: #000000;
+      font-weight: 500;
+    }
+    &__input{
+      padding-left: 10px;
+      width: 100%;
+      height: 40px;
+      border: 1px solid #000000;
+      border-radius: 3px;
+    }
   }
 
   .form-registration{
